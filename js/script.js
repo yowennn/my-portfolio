@@ -12,58 +12,44 @@ const homeSection = document.querySelector("#home");
 const greetingText = "Hello, I'm Owen Paredes";
 const roleText = "IT & Data Management Analyst";
 
-// ================= TYPE & DELETE =================
-function typeText(element, text, speed = 60) {
-    return new Promise(resolve => {
-        let index = 0;
-        element.textContent = "";
-        const interval = setInterval(() => {
-            element.textContent += text[index++];
-            if (index === text.length) {
-                clearInterval(interval);
-                resolve();
-            }
-        }, speed);
-    });
-}
-
-function deleteText(element, speed = 40) {
-    return new Promise(resolve => {
-        const interval = setInterval(() => {
-            element.textContent = element.textContent.slice(0, -1);
-            if (!element.textContent.length) {
-                clearInterval(interval);
-                resolve();
-            }
-        }, speed);
-    });
-}
-
-function fadeIn(element) {
-    return new Promise(resolve => {
-        element.style.display = "block";
-        setTimeout(() => {
-            element.classList.add("active");
-            resolve();
-        }, 50);
-    });
-}
-
-function fadeInSocials() {
-    return new Promise(resolve => {
-        socialEls.forEach((icon, i) => {
-            setTimeout(() => {
-                icon.classList.add("active");
-                if (i === socialEls.length - 1) resolve();
-            }, i * 300);
-        });
-    });
-}
-
 let isHomeVisible = false;
 let isGreetingLoopRunning = false;
 let greetingLoopTimeout = null;
 let homeAnimatedOnce = false;
+
+function sleep(ms) {
+    return new Promise(r => setTimeout(r, ms));
+}
+
+// ================= TYPE & DELETE =================
+async function typeText(element, text, speed = 60) {
+    element.textContent = "";
+    for (let i = 0; i < text.length; i++) {
+        if (!isHomeVisible) return;
+        element.textContent += text[i];
+        await sleep(speed);
+    }
+}
+
+async function deleteText(element, speed = 40) {
+    while (element.textContent.length && isHomeVisible) {
+        element.textContent = element.textContent.slice(0, -1);
+        await sleep(speed);
+    }
+}
+
+async function fadeIn(element) {
+    element.style.display = "block";
+    await sleep(50); 
+    element.classList.add("active");
+}
+
+async function fadeInSocials() {
+    for (let i = 0; i < socialEls.length; i++) {
+        socialEls[i].classList.add("active");
+        await sleep(200);
+    }
+}
 
 function resetGreetingState() {
     isGreetingLoopRunning = false;
@@ -86,18 +72,19 @@ async function loopGreetingControlled() {
 
         if (!isHomeVisible) break;
 
-        await new Promise(r => setTimeout(r, 800));
+        await sleep(800);
         await deleteText(greetingEl, 40);
-        await new Promise(r => setTimeout(r, 300));
+        await sleep(300);
     }
 
     isGreetingLoopRunning = false;
 }
 
 function scheduleGreetingLoop() {
-    if (greetingLoopTimeout) clearTimeout(greetingLoopTimeout);
+    if (greetingLoopTimeout) return; 
 
     greetingLoopTimeout = setTimeout(() => {
+        greetingLoopTimeout = null;
         if (isHomeVisible && !isGreetingLoopRunning) {
             loopGreetingControlled();
         }
@@ -129,9 +116,12 @@ const observer = new IntersectionObserver(entries => {
         if (entry.isIntersecting) {
             isHomeVisible = true;
 
-            if (homeAnimatedOnce) {
-                scheduleGreetingLoop();
+            if (!homeAnimatedOnce) {
+                animateHome(); 
+            } else {
+                scheduleGreetingLoop(); 
             }
+
         } else {
             isHomeVisible = false;
             resetGreetingState();
@@ -141,7 +131,6 @@ const observer = new IntersectionObserver(entries => {
 
 observer.observe(homeSection);
 
-animateHome();
 
 
 // ================= THEME TOGGLE =================
