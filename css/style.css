@@ -919,7 +919,7 @@ body {
 #contactForm {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 5px;
 }
 
 .hidden-field {
