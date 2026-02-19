@@ -187,6 +187,10 @@ const form = document.getElementById("contactForm");
 const status = document.querySelector(".form-status");
 const inputs = form.querySelectorAll("input[required], textarea[required]");
 
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 inputs.forEach((input) => {
   input.addEventListener("input", () => {
     if (input.checkValidity()) {
@@ -201,6 +205,20 @@ inputs.forEach((input) => {
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+
+    const emailInput = form.querySelector('input[name="email"]');
+    
+    if (!isValidEmail(emailInput.value.trim())) {
+    
+      emailInput.classList.add("error");
+      emailInput.classList.remove("valid");
+    
+      status.textContent = "Invalid email address.";
+      status.classList.remove("success");
+      status.classList.add("error");
+    
+      return;
+    }
 
   const data = Object.fromEntries(new FormData(form).entries());
 
