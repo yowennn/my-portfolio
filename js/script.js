@@ -40,11 +40,16 @@ function deleteText(element, speed = 40) {
     });
 }
 
-let isHomeVisible = true;
+let isHomeVisible = false;
 let isGreetingLoopRunning = false;
+let isIntroFinished = false;
+let loopDelayTimeout = null;
+
 
 async function loopGreetingControlled() {
     if (isGreetingLoopRunning) return;
+    if (!isHomeVisible) return;
+
     isGreetingLoopRunning = true;
 
     while (isHomeVisible) {
@@ -60,28 +65,23 @@ async function loopGreetingControlled() {
     isGreetingLoopRunning = false;
 }
 
-function fadeIn(element) {
-    return new Promise(resolve => {
-        element.style.display = "block";
-        setTimeout(() => {
-            element.classList.add("active");
-            resolve();
-        }, 50);
-    });
+
+// ================= START LOOP WITH DELAY =================
+function startLoopWithDelay() {
+
+    clearTimeout(loopDelayTimeout);
+
+    loopDelayTimeout = setTimeout(() => {
+        if (isHomeVisible && isIntroFinished) {
+            loopGreetingControlled();
+        }
+    }, 5000); 
 }
 
-function fadeInSocials() {
-    return new Promise(resolve => {
-        socialEls.forEach((icon, i) => {
-            setTimeout(() => {
-                icon.classList.add("active");
-                if (i === socialEls.length - 1) resolve();
-            }, i * 300);
-        });
-    });
-}
 
+// ================= HOME INTRO ANIMATION =================
 async function animateHome() {
+
     await typeText(greetingEl, greetingText, 60);
     await typeText(roleEl, roleText, 60);
 
@@ -90,33 +90,44 @@ async function animateHome() {
     await fadeIn(aboutBtn);
     await fadeIn(cvBtn);
     await fadeIn(scrollEl);
+
     await fadeIn(profileEl);
 
-    await new Promise(r => setTimeout(r, 5000));
+    isIntroFinished = true;
 
-    loopGreetingControlled();
+    if (isHomeVisible) {
+        startLoopWithDelay();
+    }
 }
 
 animateHome();
+
 
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
 
         if (entry.isIntersecting) {
-            // nasa home section
+
             isHomeVisible = true;
-            loopGreetingControlled();
+
+            if (isIntroFinished) {
+                startLoopWithDelay();
+            }
+
         } else {
-            // lumabas sa home
+
             isHomeVisible = false;
+
+            clearTimeout(loopDelayTimeout);
         }
 
     });
 }, {
-    threshold: 0.6 
+    threshold: 0.6
 });
 
 observer.observe(homeSection);
+
 
 
 // ================= THEME TOGGLE =================
