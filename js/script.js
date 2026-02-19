@@ -12,14 +12,13 @@ const homeSection = document.querySelector("#home");
 const greetingText = "Hello, I'm Owen Paredes";
 const roleText = "IT & Data Management Analyst";
 
-// ================= TYPE & DELETE TEXT =================
+// ================= TYPE & DELETE =================
 function typeText(element, text, speed = 60) {
     return new Promise(resolve => {
         let index = 0;
         element.textContent = "";
         const interval = setInterval(() => {
-            element.textContent += text[index];
-            index++;
+            element.textContent += text[index++];
             if (index === text.length) {
                 clearInterval(interval);
                 resolve();
@@ -32,7 +31,7 @@ function deleteText(element, speed = 40) {
     return new Promise(resolve => {
         const interval = setInterval(() => {
             element.textContent = element.textContent.slice(0, -1);
-            if (element.textContent.length === 0) {
+            if (!element.textContent.length) {
                 clearInterval(interval);
                 resolve();
             }
@@ -66,18 +65,27 @@ let isGreetingLoopRunning = false;
 let greetingLoopTimeout = null;
 let homeAnimatedOnce = false;
 
+function resetGreetingState() {
+    isGreetingLoopRunning = false;
+    greetingEl.textContent = greetingText;
+
+    if (greetingLoopTimeout) {
+        clearTimeout(greetingLoopTimeout);
+        greetingLoopTimeout = null;
+    }
+}
+
 async function loopGreetingControlled() {
     if (isGreetingLoopRunning) return;
     isGreetingLoopRunning = true;
 
     while (isHomeVisible) {
         greetingEl.textContent = "";
-
         await typeText(greetingEl, greetingText, 60);
-        await new Promise(r => setTimeout(r, 800));
 
         if (!isHomeVisible) break;
 
+        await new Promise(r => setTimeout(r, 800));
         await deleteText(greetingEl, 40);
         await new Promise(r => setTimeout(r, 300));
     }
@@ -115,23 +123,15 @@ async function animateHome() {
     scheduleGreetingLoop();
 }
 
-const observer = new IntersectionObserver((entries) => {
+const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
-
         if (entry.isIntersecting) {
             isHomeVisible = true;
-
-            if (homeAnimatedOnce) {
-                scheduleGreetingLoop();
-            }
-
+            greetingEl.textContent = greetingText;
+            scheduleGreetingLoop();
         } else {
             isHomeVisible = false;
-
-            if (greetingLoopTimeout) {
-                clearTimeout(greetingLoopTimeout);
-                greetingLoopTimeout = null;
-            }
+            resetGreetingState();
         }
     });
 }, { threshold: 0.6 });
@@ -139,8 +139,6 @@ const observer = new IntersectionObserver((entries) => {
 observer.observe(homeSection);
 
 animateHome();
-;
-
 
 // ================= THEME TOGGLE =================
 const toggleBtn = document.getElementById("toggleTheme");
