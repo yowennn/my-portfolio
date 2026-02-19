@@ -40,16 +40,33 @@ function deleteText(element, speed = 40) {
     });
 }
 
-let isHomeVisible = false;
-let isGreetingLoopRunning = false;
-let isIntroFinished = false;
-let loopDelayTimeout = null;
+function fadeIn(element) {
+    return new Promise(resolve => {
+        element.style.display = "block";
+        setTimeout(() => {
+            element.classList.add("active");
+            resolve();
+        }, 50);
+    });
+}
 
+function fadeInSocials() {
+    return new Promise(resolve => {
+        socialEls.forEach((icon, i) => {
+            setTimeout(() => {
+                icon.classList.add("active");
+                if (i === socialEls.length - 1) resolve();
+            }, i * 300);
+        });
+    });
+}
+
+let isHomeVisible = true;
+let isGreetingLoopRunning = false;
+let greetingLoopTimeout = null;
 
 async function loopGreetingControlled() {
     if (isGreetingLoopRunning) return;
-    if (!isHomeVisible) return;
-
     isGreetingLoopRunning = true;
 
     while (isHomeVisible) {
@@ -65,23 +82,7 @@ async function loopGreetingControlled() {
     isGreetingLoopRunning = false;
 }
 
-
-// ================= START LOOP WITH DELAY =================
-function startLoopWithDelay() {
-
-    clearTimeout(loopDelayTimeout);
-
-    loopDelayTimeout = setTimeout(() => {
-        if (isHomeVisible && isIntroFinished) {
-            loopGreetingControlled();
-        }
-    }, 5000); 
-}
-
-
-// ================= HOME INTRO ANIMATION =================
 async function animateHome() {
-
     await typeText(greetingEl, greetingText, 60);
     await typeText(roleEl, roleText, 60);
 
@@ -90,43 +91,35 @@ async function animateHome() {
     await fadeIn(aboutBtn);
     await fadeIn(cvBtn);
     await fadeIn(scrollEl);
-
     await fadeIn(profileEl);
 
-    isIntroFinished = true;
-
-    if (isHomeVisible) {
-        startLoopWithDelay();
-    }
+    if (greetingLoopTimeout) clearTimeout(greetingLoopTimeout);
+    greetingLoopTimeout = setTimeout(() => {
+        if (isHomeVisible) loopGreetingControlled();
+    }, 5000);
 }
-
-animateHome();
-
 
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-
         if (entry.isIntersecting) {
-
             isHomeVisible = true;
 
-            if (isIntroFinished) {
-                startLoopWithDelay();
-            }
-
+            if (greetingLoopTimeout) clearTimeout(greetingLoopTimeout);
+            greetingLoopTimeout = setTimeout(() => {
+                if (isHomeVisible) loopGreetingControlled();
+            }, 5000);
         } else {
-
             isHomeVisible = false;
-
-            clearTimeout(loopDelayTimeout);
         }
-
     });
 }, {
     threshold: 0.6
 });
 
 observer.observe(homeSection);
+
+animateHome();
+
 
 
 
