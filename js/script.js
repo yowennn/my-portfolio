@@ -93,7 +93,6 @@ async function animateHome() {
     await fadeIn(scrollEl);
     await fadeIn(profileEl);
 
-    if (greetingLoopTimeout) clearTimeout(greetingLoopTimeout);
     greetingLoopTimeout = setTimeout(() => {
         if (isHomeVisible) loopGreetingControlled();
     }, 5000);
@@ -108,19 +107,16 @@ const observer = new IntersectionObserver((entries) => {
             greetingLoopTimeout = setTimeout(() => {
                 if (isHomeVisible) loopGreetingControlled();
             }, 5000);
+
         } else {
             isHomeVisible = false;
         }
     });
-}, {
-    threshold: 0.6
-});
+}, { threshold: 0.6 });
 
 observer.observe(homeSection);
 
 animateHome();
-
-
 
 
 // ================= THEME TOGGLE =================
