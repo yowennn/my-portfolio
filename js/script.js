@@ -199,7 +199,6 @@ inputs.forEach((input) => {
   });
 });
 
-
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -212,39 +211,39 @@ form.addEventListener("submit", async (e) => {
       body: JSON.stringify(data),
     });
 
-const result = await res.json();
-status.textContent = result.message;
+    const result = await res.json();
+    status.textContent = result.message;
 
-if (res.ok) {
-  status.classList.remove("error");
-  status.classList.add("success");
+    if (res.ok) {
+      status.classList.remove("error");
+      status.classList.add("success");
 
-  inputs.forEach(input => {
-    input.classList.remove("error");
-    input.classList.add("valid");
-  });
+      inputs.forEach((input) => {
+        input.classList.remove("error");
+        input.classList.add("valid");
+      });
 
-  form.reset();
-} else {
-  status.classList.remove("success");
-  status.classList.add("error");
-
-  inputs.forEach(input => {
-    if (!input.value.trim()) {
-      input.classList.remove("valid");
-      input.classList.add("error");
-    }
-  });
-}
-
-    } catch {
-      status.textContent = "Error sending message.";
+      form.reset();
+    } else {
       status.classList.remove("success");
       status.classList.add("error");
-    
-      inputs.forEach(input => input.classList.add("error"));
+
+      inputs.forEach((input) => {
+        if (!input.value.trim()) {
+          input.classList.remove("valid");
+          input.classList.add("error");
+        }
+      });
     }
+  } catch {
+    status.textContent = "Error sending message.";
+    status.classList.remove("success");
+    status.classList.add("error");
+
+    inputs.forEach((input) => input.classList.add("error"));
+  }
 });
+
 
 
 
