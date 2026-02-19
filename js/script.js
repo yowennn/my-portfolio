@@ -61,16 +61,17 @@ function fadeInSocials() {
     });
 }
 
-let isHomeVisible = true;
+let isHomeVisible = false;
 let isGreetingLoopRunning = false;
 let greetingLoopTimeout = null;
+let homeAnimatedOnce = false;
 
 async function loopGreetingControlled() {
     if (isGreetingLoopRunning) return;
     isGreetingLoopRunning = true;
 
     while (isHomeVisible) {
-        greetingEl.textContent = ""; // 🔥 ADD THIS
+        greetingEl.textContent = "";
 
         await typeText(greetingEl, greetingText, 60);
         await new Promise(r => setTimeout(r, 800));
@@ -84,8 +85,19 @@ async function loopGreetingControlled() {
     isGreetingLoopRunning = false;
 }
 
+function scheduleGreetingLoop() {
+    if (greetingLoopTimeout) clearTimeout(greetingLoopTimeout);
+
+    greetingLoopTimeout = setTimeout(() => {
+        if (isHomeVisible) {
+            loopGreetingControlled();
+        }
+    }, 5000);
+}
 
 async function animateHome() {
+    if (homeAnimatedOnce) return;
+    homeAnimatedOnce = true;
 
     greetingEl.textContent = "";
     roleEl.textContent = "";
@@ -100,24 +112,34 @@ async function animateHome() {
     await fadeIn(scrollEl);
     await fadeIn(profileEl);
 
-    greetingLoopTimeout = setTimeout(() => {
-        if (isHomeVisible) {
-            loopGreetingControlled();
-        }
-    }, 5000);
+    scheduleGreetingLoop();
 }
-
 
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-        isHomeVisible = entry.isIntersecting;
+
+        if (entry.isIntersecting) {
+            isHomeVisible = true;
+
+            if (homeAnimatedOnce) {
+                scheduleGreetingLoop();
+            }
+
+        } else {
+            isHomeVisible = false;
+
+            if (greetingLoopTimeout) {
+                clearTimeout(greetingLoopTimeout);
+                greetingLoopTimeout = null;
+            }
+        }
     });
 }, { threshold: 0.6 });
 
 observer.observe(homeSection);
 
-
 animateHome();
+;
 
 
 // ================= THEME TOGGLE =================
