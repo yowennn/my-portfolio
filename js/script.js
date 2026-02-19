@@ -13,102 +13,76 @@ const greetingText = "Hello, I'm Owen Paredes";
 const roleText = "IT & Data Management Analyst";
 
 let isHomeVisible = false;
-let isGreetingLoopRunning = false;
-let greetingLoopTimeout = null;
-let homeAnimatedOnce = false;
+let introPlayed = false;
+let loopController = 0;
+let loopTimeout = null;
 
 function sleep(ms) {
-    return new Promise(r => setTimeout(r, ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// ================= TYPE & DELETE =================
 async function typeText(element, text, speed = 60) {
     element.textContent = "";
     for (let i = 0; i < text.length; i++) {
-        if (!isHomeVisible) return;
         element.textContent += text[i];
         await sleep(speed);
     }
 }
 
-async function deleteText(element, speed = 40) {
-    while (element.textContent.length && isHomeVisible) {
+async function deleteText(element, speed = 40, controller) {
+    while (element.textContent.length) {
+        if (controller !== loopController) return;
         element.textContent = element.textContent.slice(0, -1);
         await sleep(speed);
     }
 }
 
-async function fadeIn(element) {
-    element.style.display = "block";
-    await sleep(50); 
-    element.classList.add("active");
-}
+async function playIntro() {
+    await typeText(greetingEl, greetingText, 60);
+    await typeText(roleEl, roleText, 60);
 
-async function fadeInSocials() {
-    for (let i = 0; i < socialEls.length; i++) {
-        socialEls[i].classList.add("active");
+    descEl.style.display = "block";
+    descEl.classList.add("active");
+
+    for (let el of socialEls) {
+        el.classList.add("active");
         await sleep(200);
     }
+
+    aboutBtn.classList.add("active");
+    cvBtn.classList.add("active");
+    scrollEl.classList.add("active");
+    profileEl.classList.add("active");
 }
 
-function resetGreetingState() {
-    isGreetingLoopRunning = false;
+async function startGreetingLoop() {
+    const controller = ++loopController;
 
-    if (greetingLoopTimeout) {
-        clearTimeout(greetingLoopTimeout);
-        greetingLoopTimeout = null;
-    }
-
-    greetingEl.textContent = greetingText;
-}
-
-async function loopGreetingControlled() {
-    if (isGreetingLoopRunning) return;
-    isGreetingLoopRunning = true;
-
-    while (isHomeVisible) {
-        greetingEl.textContent = "";
-        await typeText(greetingEl, greetingText, 60);
-
-        if (!isHomeVisible) break;
-
-        await sleep(800);
-        await deleteText(greetingEl, 40);
+    while (isHomeVisible && controller === loopController) {
+        await deleteText(greetingEl, 40, controller);
         await sleep(300);
+        await typeText(greetingEl, greetingText, 60);
+        await sleep(1000);
     }
-
-    isGreetingLoopRunning = false;
 }
 
-function scheduleGreetingLoop() {
-    if (greetingLoopTimeout) return; 
+function scheduleLoop() {
+    if (loopTimeout) return;
 
-    greetingLoopTimeout = setTimeout(() => {
-        greetingLoopTimeout = null;
-        if (isHomeVisible && !isGreetingLoopRunning) {
-            loopGreetingControlled();
+    loopTimeout = setTimeout(() => {
+        loopTimeout = null;
+        if (isHomeVisible) {
+            startGreetingLoop();
         }
     }, 5000);
 }
 
-async function animateHome() {
-    if (homeAnimatedOnce) return;
-    homeAnimatedOnce = true;
-
-    greetingEl.textContent = "";
-    roleEl.textContent = "";
-
-    await typeText(greetingEl, greetingText, 60);
-    await typeText(roleEl, roleText, 60);
-
-    await fadeIn(descEl);
-    await fadeInSocials();
-    await fadeIn(aboutBtn);
-    await fadeIn(cvBtn);
-    await fadeIn(scrollEl);
-    await fadeIn(profileEl);
-
-    scheduleGreetingLoop();
+function stopLoop() {
+    loopController++; 
+    if (loopTimeout) {
+        clearTimeout(loopTimeout);
+        loopTimeout = null;
+    }
 }
 
 const observer = new IntersectionObserver(entries => {
@@ -116,21 +90,23 @@ const observer = new IntersectionObserver(entries => {
         if (entry.isIntersecting) {
             isHomeVisible = true;
 
-            if (!homeAnimatedOnce) {
-                animateHome(); 
+            if (!introPlayed) {
+                introPlayed = true;
+                playIntro().then(() => {
+                    scheduleLoop();
+                });
             } else {
-                scheduleGreetingLoop(); 
+                scheduleLoop();
             }
 
         } else {
             isHomeVisible = false;
-            resetGreetingState();
+            stopLoop(); 
         }
     });
 }, { threshold: 0.6 });
 
 observer.observe(homeSection);
-
 
 
 // ================= THEME TOGGLE =================
