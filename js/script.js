@@ -7,6 +7,7 @@ const profileEl = document.querySelector(".home-right");
 const aboutBtn = document.querySelector(".about-btn");
 const cvBtn = document.querySelector(".cv-btn");
 const scrollEl = document.querySelector(".scroll-indicator");
+const homeSection = document.querySelector("#home");
 
 const greetingText = "Hello, I'm Owen Paredes";
 const roleText = "IT & Data Management Analyst";
@@ -93,10 +94,30 @@ async function animateHome() {
 
     await new Promise(r => setTimeout(r, 5000));
 
-    loopGreetingInfinite();
+    loopGreetingControlled();
 }
 
 animateHome();
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+
+        if (entry.isIntersecting) {
+            // nasa home section
+            isHomeVisible = true;
+            loopGreetingControlled();
+        } else {
+            // lumabas sa home
+            isHomeVisible = false;
+        }
+
+    });
+}, {
+    threshold: 0.6 
+});
+
+observer.observe(homeSection);
+
 
 // ================= THEME TOGGLE =================
 const toggleBtn = document.getElementById("toggleTheme");
