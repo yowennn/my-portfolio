@@ -67,12 +67,13 @@ let homeAnimatedOnce = false;
 
 function resetGreetingState() {
     isGreetingLoopRunning = false;
-    greetingEl.textContent = greetingText;
 
     if (greetingLoopTimeout) {
         clearTimeout(greetingLoopTimeout);
         greetingLoopTimeout = null;
     }
+
+    greetingEl.textContent = greetingText;
 }
 
 async function loopGreetingControlled() {
@@ -97,7 +98,7 @@ function scheduleGreetingLoop() {
     if (greetingLoopTimeout) clearTimeout(greetingLoopTimeout);
 
     greetingLoopTimeout = setTimeout(() => {
-        if (isHomeVisible) {
+        if (isHomeVisible && !isGreetingLoopRunning) {
             loopGreetingControlled();
         }
     }, 5000);
@@ -127,8 +128,10 @@ const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             isHomeVisible = true;
-            greetingEl.textContent = greetingText;
-            scheduleGreetingLoop();
+
+            if (homeAnimatedOnce) {
+                scheduleGreetingLoop();
+            }
         } else {
             isHomeVisible = false;
             resetGreetingState();
@@ -139,6 +142,7 @@ const observer = new IntersectionObserver(entries => {
 observer.observe(homeSection);
 
 animateHome();
+
 
 // ================= THEME TOGGLE =================
 const toggleBtn = document.getElementById("toggleTheme");
