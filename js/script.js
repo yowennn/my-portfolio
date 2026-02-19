@@ -208,6 +208,12 @@ const form = document.getElementById("contactForm");
 const status = document.querySelector(".form-status");
 const inputs = form.querySelectorAll("input[required], textarea[required]");
 
+const fieldLabels = {
+  name: "Your Name",
+  email: "Email Address",
+  message: "Your Message"
+};
+
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -231,11 +237,12 @@ form.addEventListener("submit", async (e) => {
 
   inputs.forEach((input) => {
     const value = input.value.trim();
+    const label = fieldLabels[input.name] || "This field";
 
     if (!value) {
       input.classList.add("error");
       input.classList.remove("valid");
-      errors.push(`${input.getAttribute("placeholder")} is required.`);
+      errors.push(`${label} is required.`);
     } else if (input.type === "email" && !isValidEmail(value)) {
       input.classList.add("error");
       input.classList.remove("valid");
