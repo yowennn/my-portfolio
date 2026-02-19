@@ -185,6 +185,20 @@ document.addEventListener("DOMContentLoaded", () => {
 // ================= CONTACT =================
 const form = document.getElementById("contactForm");
 const status = document.querySelector(".form-status");
+const inputs = form.querySelectorAll("input[required], textarea[required]");
+
+inputs.forEach((input) => {
+  input.addEventListener("input", () => {
+    if (input.checkValidity()) {
+      input.classList.remove("error");
+      input.classList.add("valid");
+    } else {
+      input.classList.remove("valid");
+      input.classList.add("error");
+    }
+  });
+});
+
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -198,12 +212,38 @@ form.addEventListener("submit", async (e) => {
       body: JSON.stringify(data),
     });
 
-    const result = await res.json();
-    status.textContent = result.message;
-    if (res.ok) form.reset();
-  } catch {
-    status.textContent = "Error sending message.";
-  }
+const result = await res.json();
+status.textContent = result.message;
+
+if (res.ok) {
+  status.classList.remove("error");
+  status.classList.add("success");
+
+  inputs.forEach(input => {
+    input.classList.remove("error");
+    input.classList.add("valid");
+  });
+
+  form.reset();
+} else {
+  status.classList.remove("success");
+  status.classList.add("error");
+
+  inputs.forEach(input => {
+    if (!input.value.trim()) {
+      input.classList.remove("valid");
+      input.classList.add("error");
+    }
+  });
+}
+
+    } catch {
+      status.textContent = "Error sending message.";
+      status.classList.remove("success");
+      status.classList.add("error");
+    
+      inputs.forEach(input => input.classList.add("error"));
+    }
 });
 
 
