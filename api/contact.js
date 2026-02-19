@@ -7,12 +7,10 @@ export default async function handler(req, res) {
 
   const { name, email, message, website } = req.body;
 
-  // Honeypot spam protection
   if (website) {
     return res.status(400).json({ message: "Spam detected" });
   }
 
-  // Validation
   if (!name || !email || !message) {
     return res.status(400).json({ message: "All fields are required" });
   }
