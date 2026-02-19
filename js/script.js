@@ -214,7 +214,7 @@ function isValidEmail(email) {
 
 inputs.forEach((input) => {
   input.addEventListener("input", () => {
-    if (input.checkValidity()) {
+    if (input.checkValidity() && (input.type !== "email" || isValidEmail(input.value))) {
       input.classList.remove("error");
       input.classList.add("valid");
     } else {
@@ -227,19 +227,31 @@ inputs.forEach((input) => {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-    const emailInput = form.querySelector('input[name="email"]');
-    
-    if (!isValidEmail(emailInput.value.trim())) {
-    
-      emailInput.classList.add("error");
-      emailInput.classList.remove("valid");
-    
-      status.textContent = "Invalid email address.";
-      status.classList.remove("success");
-      status.classList.add("error");
-    
-      return;
+  let errors = [];
+
+  inputs.forEach((input) => {
+    const value = input.value.trim();
+
+    if (!value) {
+      input.classList.add("error");
+      input.classList.remove("valid");
+      errors.push(`${input.getAttribute("placeholder")} is required.`);
+    } else if (input.type === "email" && !isValidEmail(value)) {
+      input.classList.add("error");
+      input.classList.remove("valid");
+      errors.push("Invalid email address.");
+    } else {
+      input.classList.remove("error");
+      input.classList.add("valid");
     }
+  });
+
+  if (errors.length > 0) {
+    status.innerHTML = errors.join("<br>");
+    status.classList.remove("success");
+    status.classList.add("error");
+    return;
+  }
 
   const data = Object.fromEntries(new FormData(form).entries());
 
@@ -266,22 +278,14 @@ form.addEventListener("submit", async (e) => {
     } else {
       status.classList.remove("success");
       status.classList.add("error");
-
-      inputs.forEach((input) => {
-        if (!input.value.trim()) {
-          input.classList.remove("valid");
-          input.classList.add("error");
-        }
-      });
     }
   } catch {
     status.textContent = "Error sending message.";
     status.classList.remove("success");
     status.classList.add("error");
-
-    inputs.forEach((input) => input.classList.add("error"));
   }
 });
+
 
 
 
