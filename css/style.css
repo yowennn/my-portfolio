@@ -926,6 +926,49 @@ body {
   display: none;
 }
 
+.input-group input.valid,
+.input-group textarea.valid {
+  border-color: #22c55e !important;
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.15);
+  background: rgba(34,197,94,0.05);
+}
+
+.input-group input.error,
+.input-group textarea.error {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.15);
+  background: rgba(239,68,68,0.05);
+}
+
+.input-group input,
+.input-group textarea {
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease,
+    transform 0.15s ease;
+}
+
+.input-group input:focus,
+.input-group textarea:focus {
+  transform: translateY(-1px);
+}
+
+.form-status {
+  font-size: 14px;
+  margin-top: 10px;
+  min-height: 18px;
+  transition: 0.25s ease;
+}
+
+.form-status.success {
+  color: #22c55e;
+}
+
+.form-status.error {
+  color: #ef4444;
+}
+
 .input-group {
   position: relative;
   margin-bottom: 15px;
