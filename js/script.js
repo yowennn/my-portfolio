@@ -70,6 +70,8 @@ async function loopGreetingControlled() {
     isGreetingLoopRunning = true;
 
     while (isHomeVisible) {
+        greetingEl.textContent = ""; // 🔥 ADD THIS
+
         await typeText(greetingEl, greetingText, 60);
         await new Promise(r => setTimeout(r, 800));
 
@@ -82,7 +84,12 @@ async function loopGreetingControlled() {
     isGreetingLoopRunning = false;
 }
 
+
 async function animateHome() {
+
+    greetingEl.textContent = "";
+    roleEl.textContent = "";
+
     await typeText(greetingEl, greetingText, 60);
     await typeText(roleEl, roleText, 60);
 
@@ -94,27 +101,21 @@ async function animateHome() {
     await fadeIn(profileEl);
 
     greetingLoopTimeout = setTimeout(() => {
-        if (isHomeVisible) loopGreetingControlled();
+        if (isHomeVisible) {
+            loopGreetingControlled();
+        }
     }, 5000);
 }
 
+
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            isHomeVisible = true;
-
-            if (greetingLoopTimeout) clearTimeout(greetingLoopTimeout);
-            greetingLoopTimeout = setTimeout(() => {
-                if (isHomeVisible) loopGreetingControlled();
-            }, 5000);
-
-        } else {
-            isHomeVisible = false;
-        }
+        isHomeVisible = entry.isIntersecting;
     });
 }, { threshold: 0.6 });
 
 observer.observe(homeSection);
+
 
 animateHome();
 
