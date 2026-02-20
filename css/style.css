@@ -929,50 +929,15 @@ body {
 .input-group input.valid,
 .input-group textarea.valid {
   border-color: #22c55e !important;
-  box-shadow: 0 0 0 3px rgba(34,197,94,0.15);
-  background: rgba(34,197,94,0.05);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+  background: rgba(34, 197, 94, 0.05);
 }
 
 .input-group input.error,
 .input-group textarea.error {
   border-color: #ef4444 !important;
-  box-shadow: 0 0 0 3px rgba(239,68,68,0.15);
-  background: rgba(239,68,68,0.05);
-}
-
-.input-group input,
-.input-group textarea {
-  transition:
-    border-color 0.25s ease,
-    box-shadow 0.25s ease,
-    background 0.25s ease,
-    transform 0.15s ease;
-}
-
-.input-group input:focus,
-.input-group textarea:focus {
-  transform: translateY(-1px);
-}
-
-.form-status {
-  font-size: 14px;
-  margin-top: 10px;
-  min-height: 18px;
-  transition: 0.25s ease;
-}
-
-.form-status.success {
-  color: #22c55e;
-}
-
-.form-status.error {
-  color: #ef4444;
-}
-
-.input-group {
-  position: relative;
-  margin-bottom: 15px;
-  padding-top: 22px;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+  background: rgba(239, 68, 68, 0.05);
 }
 
 .input-group input,
@@ -985,13 +950,18 @@ body {
   background: transparent;
   color: var(--text);
   outline: none;
-  transition: 0.3s ease;
   resize: none;
+  transition: 0.3s ease;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 15px;
 }
 
 .input-group label {
   position: absolute;
-  top: 40px; 
+  top: 18px;
   left: 16px;
   color: var(--text);
   opacity: 0.6;
@@ -1005,38 +975,39 @@ body {
 .input-group input:focus,
 .input-group textarea:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  transform: translateY(-1px);
 }
 
 .input-group input:focus + label,
 .input-group input:not(:placeholder-shown) + label,
 .input-group textarea:focus + label,
 .input-group textarea:not(:placeholder-shown) + label {
-  top: 14px;
+  top: -8px;
   left: 12px;
   font-size: 12px;
   color: var(--accent);
   opacity: 1;
 }
 
-.field-error {
-  color: #ef4444;
-  font-size: 13px;
-  margin-bottom: 6px;
-  min-height: 16px;
-  opacity: 0;
-  transition: opacity 0.2s ease;
+.form-status {
+  font-size: 14px;
+  margin-top: 10px;
+  min-height: 18px;
 }
 
-.field-error.active {
-  opacity: 1;
+.form-status.success {
+  color: #22c55e;
+}
+
+.form-status.error {
+  color: #ef4444;
 }
 
 .contact-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
   padding: 14px;
   border-radius: 50px;
   border: none;
@@ -1049,12 +1020,7 @@ body {
 
 .contact-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(59,130,246,0.4);
-}
-
-.form-status {
-  font-size: 14px;
-  margin-top: 10px;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
 }
 
 .map-wrapper {
@@ -1062,8 +1028,8 @@ body {
   height: 420px;
   border-radius: 20px;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
 }
 
 .map-wrapper iframe {
