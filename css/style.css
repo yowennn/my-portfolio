@@ -1018,6 +1018,19 @@ body {
   opacity: 1;
 }
 
+.field-error {
+  color: #ef4444;
+  font-size: 13px;
+  margin-bottom: 6px;
+  min-height: 16px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.field-error.active {
+  opacity: 1;
+}
+
 .contact-btn {
   display: flex;
   align-items: center;
