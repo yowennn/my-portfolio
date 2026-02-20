@@ -991,12 +991,6 @@ body {
   opacity: 1;
 }
 
-.form-status {
-  font-size: 14px;
-  margin-top: 10px;
-  min-height: 18px;
-}
-
 .error-text {
   display: block;
   font-size: 13px;
