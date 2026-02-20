@@ -195,6 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ================= CONTACT =================
 const form = document.getElementById("contactForm");
+const status = document.querySelector(".form-status");
 const inputs = form.querySelectorAll("input[required], textarea[required]");
 
 const fieldLabels = {
@@ -207,74 +208,52 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-function getGroup(input) {
-  return input.closest(".input-group");
-}
-
-function setError(input, message) {
-  const group = getGroup(input);
-  const errorText = group.querySelector(".error-text");
-
-  errorText.textContent = message;
-
-  input.classList.add("error");
-  input.classList.remove("valid");
-}
-
-function setValid(input) {
-  const group = getGroup(input);
-  const errorText = group.querySelector(".error-text");
-
-  errorText.textContent = "";
-
-  input.classList.remove("error");
-  input.classList.add("valid");
-}
-
 inputs.forEach((input) => {
   input.addEventListener("input", () => {
-    const value = input.value.trim();
-    const label = fieldLabels[input.name];
-
-    if (!value) {
-      setError(input, `${label} is required.`);
-      return;
+    if (
+      input.checkValidity() &&
+      (input.type !== "email" || isValidEmail(input.value))
+    ) {
+      input.classList.remove("error");
+      input.classList.add("valid");
+    } else {
+      input.classList.remove("valid");
+      input.classList.add("error");
     }
-
-    if (input.type === "email" && !isValidEmail(value)) {
-      setError(input, "Invalid email address.");
-      return;
-    }
-
-    setValid(input);
   });
 });
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  let hasError = false;
+  let errors = [];
 
   inputs.forEach((input) => {
     const value = input.value.trim();
-    const label = fieldLabels[input.name];
+    const label = fieldLabels[input.name] || "This field";
 
     if (!value) {
-      setError(input, `${label} is required.`);
-      hasError = true;
-      return;
+      input.classList.add("error");
+      input.classList.remove("valid");
+      errors.push(`${label} is required.`);
+    } 
+    else if (input.type === "email" && !isValidEmail(value)) {
+      input.classList.add("error");
+      input.classList.remove("valid");
+      errors.push("Invalid email address.");
+    } 
+    else {
+      input.classList.remove("error");
+      input.classList.add("valid");
     }
-
-    if (input.type === "email" && !isValidEmail(value)) {
-      setError(input, "Invalid email address.");
-      hasError = true;
-      return;
-    }
-
-    setValid(input);
   });
 
-  if (hasError) return;
+  if (errors.length > 0) {
+    status.innerHTML = errors.join("<br>");
+    status.classList.remove("success");
+    status.classList.add("error");
+    return;
+  }
 
   const data = Object.fromEntries(new FormData(form).entries());
 
@@ -286,18 +265,26 @@ form.addEventListener("submit", async (e) => {
     });
 
     const result = await res.json();
+    status.textContent = result.message;
 
     if (res.ok) {
+      status.classList.remove("error");
+      status.classList.add("success");
+
       inputs.forEach((input) => {
-        setValid(input);
+        input.classList.remove("error");
+        input.classList.add("valid");
       });
 
       form.reset();
     } else {
-      alert(result.message || "Failed to send message.");
+      status.classList.remove("success");
+      status.classList.add("error");
     }
   } catch {
-    alert("Error sending message.");
+    status.textContent = "Error sending message.";
+    status.classList.remove("success");
+    status.classList.add("error");
   }
 });
 
