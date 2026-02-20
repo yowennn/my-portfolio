@@ -997,6 +997,14 @@ body {
   min-height: 18px;
 }
 
+.error-text {
+  display: block;
+  font-size: 13px;
+  color: #ef4444;
+  margin-bottom: 6px;
+  min-height: 16px;
+}
+
 .form-status.success {
   color: #22c55e;
 }
