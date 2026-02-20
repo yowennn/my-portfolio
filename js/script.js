@@ -210,9 +210,19 @@ function isValidEmail(email) {
 
 inputs.forEach((input) => {
   input.addEventListener("input", () => {
-    if (input.checkValidity() && (input.type !== "email" || isValidEmail(input.value))) {
+    const group = input.closest(".input-group");
+    const errorBox = group.querySelector(".field-error");
+
+    if (
+      input.checkValidity() &&
+      (input.type !== "email" || isValidEmail(input.value))
+    ) {
       input.classList.remove("error");
       input.classList.add("valid");
+
+      // clear inline error
+      errorBox.textContent = "";
+      errorBox.classList.remove("active");
     } else {
       input.classList.remove("valid");
       input.classList.add("error");
@@ -223,32 +233,40 @@ inputs.forEach((input) => {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  let errors = [];
+  let hasError = false;
 
   inputs.forEach((input) => {
     const value = input.value.trim();
     const label = fieldLabels[input.name] || "This field";
+    const group = input.closest(".input-group");
+    const errorBox = group.querySelector(".field-error");
+
+    errorBox.textContent = "";
+    errorBox.classList.remove("active");
 
     if (!value) {
       input.classList.add("error");
       input.classList.remove("valid");
-      errors.push(`${label} is required.`);
+
+      errorBox.textContent = `${label} is required.`;
+      errorBox.classList.add("active");
+      hasError = true;
+
     } else if (input.type === "email" && !isValidEmail(value)) {
       input.classList.add("error");
       input.classList.remove("valid");
-      errors.push("Invalid email address.");
+
+      errorBox.textContent = "Invalid email address.";
+      errorBox.classList.add("active");
+      hasError = true;
+
     } else {
       input.classList.remove("error");
       input.classList.add("valid");
     }
   });
 
-  if (errors.length > 0) {
-    status.innerHTML = errors.join("<br>");
-    status.classList.remove("success");
-    status.classList.add("error");
-    return;
-  }
+  if (hasError) return;
 
   const data = Object.fromEntries(new FormData(form).entries());
 
@@ -266,23 +284,23 @@ form.addEventListener("submit", async (e) => {
       status.classList.remove("error");
       status.classList.add("success");
 
-      inputs.forEach((input) => {
-        input.classList.remove("error");
-        input.classList.add("valid");
-      });
-
       form.reset();
+
+      inputs.forEach((input) => {
+        input.classList.remove("valid");
+        input.classList.remove("error");
+      });
     } else {
       status.classList.remove("success");
       status.classList.add("error");
     }
+
   } catch {
     status.textContent = "Error sending message.";
     status.classList.remove("success");
     status.classList.add("error");
   }
 });
-
 
 
 
