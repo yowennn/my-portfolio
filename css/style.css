@@ -962,9 +962,9 @@ body {
 
 .input-group input:focus,
 .input-group textarea:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-  transform: translateY(-1px);
+  border-color: var(--card-border); 
+  box-shadow: none; 
+  transform: none;
 }
 
 .input-group label {
