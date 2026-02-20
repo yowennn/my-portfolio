@@ -981,7 +981,7 @@ body {
 .input-group input:not(:placeholder-shown) + label,
 .input-group textarea:focus + label,
 .input-group textarea:not(:placeholder-shown) + label {
-  top: -12px; 
+  top: -12px;
   left: 10px;
   font-size: 13px; 
   font-weight: 500;
