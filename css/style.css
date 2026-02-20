@@ -943,7 +943,8 @@ body {
 
 .input-group {
   position: relative;
-  margin-bottom: 15px;
+  margin-bottom: 22px;
+  padding-top: 18px; 
 }
 
 .input-group input,
@@ -969,7 +970,7 @@ body {
 
 .input-group label {
   position: absolute;
-  top: 18px;
+  top: 34px;   
   left: 16px;
   font-size: 14px;
   color: var(--text);
@@ -977,7 +978,7 @@ body {
   pointer-events: none;
   background: var(--bg);
   padding: 0 6px;
-  transition: 0.3s ease;
+  transition: 0.25s ease;
 }
 
 .input-group input:focus + label,
@@ -996,7 +997,7 @@ body {
   font-size: 13px;
   color: #ef4444;
   margin-bottom: 6px;
-  min-height: 16px;
+  height: 16px; 
 }
 
 .form-status.success {
