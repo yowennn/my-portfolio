@@ -961,12 +961,11 @@ body {
 
 .input-group label {
   position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 15px;
+  top: 20px;
+  left: 18px;
   color: var(--text);
   opacity: 0.6;
+  font-size: 15px; 
   pointer-events: none;
   transition: all 0.25s ease;
 }
@@ -982,8 +981,10 @@ body {
 .input-group input:not(:placeholder-shown) + label,
 .input-group textarea:focus + label,
 .input-group textarea:not(:placeholder-shown) + label {
-  transform: translateY(-150%);
-  font-size: 12px;
+  top: -12px; 
+  left: 10px;
+  font-size: 13px; 
+  font-weight: 500;
   color: var(--accent);
   opacity: 1;
 }
